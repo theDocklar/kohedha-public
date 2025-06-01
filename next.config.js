@@ -10,6 +10,12 @@ const nextConfig = {
   images: {
     domains: ["placeholder.com", "kohedha.lk"],
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
+    ],
   },
 }
 
