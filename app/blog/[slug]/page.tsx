@@ -2,54 +2,31 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, Calendar, Clock, Facebook, Instagram, Twitter, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { getPost, getRelatedPosts } from "@/lib/sanity"
+import { PortableText } from "@portabletext/react"
+import { notFound } from "next/navigation"
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  // In a real application, you would fetch the blog post data based on the slug
-  // For this example, we'll use a hardcoded post
-  const post = {
-    id: params.slug,
-    title: "Top 10 Beachside Restaurants in Colombo",
-    image: "/placeholder.svg?height=600&width=1200",
-    category: "Restaurants",
-    date: "May 12, 2025",
-    readTime: "5 min read",
-    author: "Priya Mendis",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    content: `
-      <p>Sri Lanka's coastal capital, Colombo, offers some of the most breathtaking oceanfront dining experiences in South Asia. With the Indian Ocean as a backdrop, these restaurants combine stunning views with exceptional cuisine.</p>
-      
-      <h2>1. The Ocean Terrace</h2>
-      <p>Perched on the edge of the coastline, The Ocean Terrace offers panoramic views of the Indian Ocean. Their seafood platters, featuring the day's freshest catch, are a must-try for any visitor.</p>
-      
-      <h2>2. Breeze Bar & Grill</h2>
-      <p>Known for its relaxed atmosphere and spectacular sunsets, Breeze Bar & Grill serves up a fusion of Sri Lankan and Mediterranean flavors. Don't miss their grilled jumbo prawns with local spices.</p>
-      
-      <h2>3. Salt on the Beach</h2>
-      <p>As the name suggests, this restaurant sits directly on the sandy shores. Their specialty is traditional Sri Lankan crab curry, prepared with a secret blend of spices passed down through generations.</p>
-      
-      <h2>4. Lighthouse Bistro</h2>
-      <p>Located near the historic Colombo lighthouse, this charming bistro offers both history and flavor. Their seafood risotto has earned them numerous culinary awards.</p>
-      
-      <h2>5. Wave Rider Café</h2>
-      <p>A favorite among surfers and beach enthusiasts, Wave Rider Café offers casual dining with unobstructed ocean views. Their fish tacos and tropical fruit smoothies are particularly popular.</p>
-      
-      <p>The remaining restaurants on our list each bring something unique to Colombo's dining scene, from innovative fusion cuisine to authentic local flavors. What they all share is a commitment to quality ingredients, exceptional service, and of course, those unforgettable ocean views.</p>
-      
-      <p>Download the Kohedha app today to discover these restaurants and more, complete with reviews, menus, and easy reservation options.</p>
-    `,
-    relatedPosts: [
-      {
-        id: "hidden-gems-kandy-food-scene",
-        title: "Hidden Gems in Kandy's Food Scene",
-        image: "/placeholder.svg?height=400&width=600",
-      },
-      {
-        id: "best-rooftop-bars-colombo",
-        title: "Best Rooftop Bars in Colombo With Stunning Views",
-        image: "/placeholder.svg?height=400&width=600",
-      },
-    ],
+interface BlogPostPageProps {
+  params: { slug: string }
+}
+
+interface RelatedPost {
+  id: string
+  title: string
+  image: string
+}
+
+export default async function BlogPost({ params }: BlogPostPageProps) {
+  // Fetch the blog post data from Sanity
+  const post = await getPost(params.slug)
+  
+  // If post doesn't exist, show 404
+  if (!post) {
+    notFound()
   }
+
+  // Fetch related posts
+  const relatedPosts = await getRelatedPosts(params.slug)
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -133,7 +110,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
           </div>
 
           <article className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-black">
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            {post.body && <PortableText value={post.body} />}
           </article>
 
           {/* App Download CTA */}
@@ -159,30 +136,32 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
           </div>
 
           {/* Related Posts */}
-          <div className="mt-12">
-            <h2 className="mb-6 text-2xl font-bold">Related Articles</h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              {post.relatedPosts.map((relatedPost) => (
-                <Link
-                  key={relatedPost.id}
-                  href={`/blog/${relatedPost.id}`}
-                  className="group overflow-hidden rounded-lg border border-gray-200 transition-all hover:shadow-md"
-                >
-                  <div className="relative h-48 w-full overflow-hidden">
-                    <Image
-                      src={relatedPost.image || "/placeholder.svg"}
-                      alt={relatedPost.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold transition-colors group-hover:text-gray-700">{relatedPost.title}</h3>
-                  </div>
-                </Link>
-              ))}
+          {relatedPosts.length > 0 && (
+            <div className="mt-12">
+              <h2 className="mb-6 text-2xl font-bold">Related Articles</h2>
+              <div className="grid gap-6 md:grid-cols-2">
+                {relatedPosts.map((relatedPost: RelatedPost) => (
+                  <Link
+                    key={relatedPost.id}
+                    href={`/blog/${relatedPost.id}`}
+                    className="group overflow-hidden rounded-lg border border-gray-200 transition-all hover:shadow-md"
+                  >
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <Image
+                        src={relatedPost.image || "/placeholder.svg"}
+                        alt={relatedPost.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold transition-colors group-hover:text-gray-700">{relatedPost.title}</h3>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

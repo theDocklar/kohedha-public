@@ -2,72 +2,22 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, ArrowRight, Calendar, Clock, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { getPosts } from "@/lib/sanity"
 
-export default function BlogPage() {
-  // Sample blog posts data
-  const blogPosts = [
-    {
-      id: "top-10-beachside-restaurants-in-colombo",
-      image: "/placeholder.svg?height=400&width=600",
-      category: "Restaurants",
-      title: "Top 10 Beachside Restaurants in Colombo",
-      excerpt:
-        "Discover the most stunning oceanfront dining experiences with breathtaking views and exceptional cuisine.",
-      date: "May 12, 2025",
-      readTime: "5 min read",
-      author: "Priya Mendis",
-    },
-    {
-      id: "upcoming-cultural-festivals-you-cant-miss",
-      image: "/placeholder.svg?height=400&width=600",
-      category: "Events",
-      title: "Upcoming Cultural Festivals You Can't Miss",
-      excerpt: "Mark your calendar for these vibrant celebrations of Sri Lankan heritage and tradition.",
-      date: "May 10, 2025",
-      readTime: "4 min read",
-      author: "Ashan Fernando",
-    },
-    {
-      id: "a-beginners-guide-to-sri-lankan-spices",
-      image: "/placeholder.svg?height=400&width=600",
-      category: "Food Guide",
-      title: "A Beginner's Guide to Sri Lankan Spices",
-      excerpt: "Learn about the essential spices that give Sri Lankan cuisine its distinctive and delicious flavor.",
-      date: "May 5, 2025",
-      readTime: "6 min read",
-      author: "Nimal Perera",
-    },
-    {
-      id: "hidden-gems-kandy-food-scene",
-      image: "/placeholder.svg?height=400&width=600",
-      category: "Restaurants",
-      title: "Hidden Gems in Kandy's Food Scene",
-      excerpt: "Explore the lesser-known culinary treasures in the historic city of Kandy that locals love.",
-      date: "May 3, 2025",
-      readTime: "7 min read",
-      author: "Dilini Rajapakse",
-    },
-    {
-      id: "best-rooftop-bars-colombo",
-      image: "/placeholder.svg?height=400&width=600",
-      category: "Nightlife",
-      title: "Best Rooftop Bars in Colombo With Stunning Views",
-      excerpt: "Elevate your evening with these spectacular rooftop venues offering panoramic views of Colombo.",
-      date: "April 28, 2025",
-      readTime: "5 min read",
-      author: "Malik Jayawardena",
-    },
-    {
-      id: "traditional-sri-lankan-desserts",
-      image: "/placeholder.svg?height=400&width=600",
-      category: "Food Guide",
-      title: "Traditional Sri Lankan Desserts You Must Try",
-      excerpt: "Indulge in the sweet side of Sri Lankan cuisine with these authentic and delicious desserts.",
-      date: "April 25, 2025",
-      readTime: "4 min read",
-      author: "Chamari Silva",
-    },
-  ]
+interface BlogPost {
+  id: string
+  title: string
+  image: string
+  categories?: string[]
+  excerpt: string
+  date: string
+  readTime: string
+  author: string
+}
+
+export default async function BlogPage() {
+  // Fetch blog posts from Sanity
+  const blogPosts = await getPosts()
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -106,51 +56,63 @@ export default function BlogPage() {
       {/* Blog Posts Grid */}
       <section className="py-16">
         <div className="container px-4">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {blogPosts.map((post) => (
-              <div
-                key={post.id}
-                className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg"
-              >
-                <div className="relative h-48 w-full overflow-hidden">
-                  <Image
-                    src={post.image || "/placeholder.svg"}
-                    alt={post.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute left-4 top-4 rounded-full bg-black px-3 py-1 text-xs font-medium text-white">
-                    {post.category}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h2 className="mb-2 text-xl font-bold transition-colors group-hover:text-gray-700">{post.title}</h2>
-                  <p className="mb-4 text-gray-600">{post.excerpt}</p>
-                  <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{post.date}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{post.readTime}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <User className="h-4 w-4" />
-                      <span>{post.author}</span>
+          {blogPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-bold mb-4">No blog posts yet</h2>
+              <p className="text-gray-600 mb-6">
+                Check back soon for the latest articles about Sri Lanka's food and event scene.
+              </p>
+              <Button asChild>
+                <Link href="/studio">Create Your First Post</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {blogPosts.map((post: BlogPost) => (
+                <div
+                  key={post.id}
+                  className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg"
+                >
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <Image
+                      src={post.image || "/placeholder.svg"}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute left-4 top-4 rounded-full bg-black px-3 py-1 text-xs font-medium text-white">
+                      {post.categories?.[0] || 'General'}
                     </div>
                   </div>
-                  <Link
-                    href={`/blog/${post.id}`}
-                    className="flex items-center gap-1 text-sm font-medium text-black transition-colors group-hover:text-gray-700"
-                  >
-                    Read Full Article
-                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                  <div className="p-6">
+                    <h2 className="mb-2 text-xl font-bold transition-colors group-hover:text-gray-700">{post.title}</h2>
+                    <p className="mb-4 text-gray-600">{post.excerpt}</p>
+                    <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{post.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{post.readTime}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        <span>{post.author}</span>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/blog/${post.id}`}
+                      className="flex items-center gap-1 text-sm font-medium text-black transition-colors group-hover:text-gray-700"
+                    >
+                      Read Full Article
+                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
