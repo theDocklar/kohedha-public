@@ -13,6 +13,7 @@ interface BlogPost {
   date: string
   readTime: string
   author: string
+  publishedAt?: string | null
 }
 
 export default async function BlogPage() {
@@ -91,6 +92,11 @@ export default async function BlogPage() {
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
                         <span>{post.date}</span>
+                        {post.publishedAt === null && (
+                          <span className="ml-2 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                            Draft
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
@@ -98,7 +104,7 @@ export default async function BlogPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <User className="h-4 w-4" />
-                        <span>{post.author}</span>
+                        <span>{post.author || 'Anonymous'}</span>
                       </div>
                     </div>
                     <Link

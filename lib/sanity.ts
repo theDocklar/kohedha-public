@@ -3,8 +3,24 @@ import { urlForImage } from '@/sanity/lib/image'
 import { groq } from 'next-sanity'
 
 // GROQ query to get all blog posts with their related data
+// Original query (only published posts):
+// export const postsQuery = groq`
+//   *[_type == "post" && publishedAt != null] | order(publishedAt desc) {
+//     _id,
+//     title,
+//     slug,
+//     mainImage,
+//     publishedAt,
+//     "author": author->name,
+//     "authorImage": author->image,
+//     "categories": categories[]->title,
+//     "excerpt": pt::text(body[0...200]) + "..."
+//   }
+// `
+
+// Modified query to show all posts (including unpublished ones) for development
 export const postsQuery = groq`
-  *[_type == "post" && publishedAt != null] | order(publishedAt desc) {
+  *[_type == "post"] | order(publishedAt desc) {
     _id,
     title,
     slug,
@@ -49,11 +65,13 @@ export async function getPosts() {
     ...post,
     image: post.mainImage ? urlForImage(post.mainImage).url() : '/placeholder.svg?height=400&width=600',
     authorImage: post.authorImage ? urlForImage(post.authorImage).url() : '/placeholder.svg?height=100&width=100',
-    date: new Date(post.publishedAt).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }),
+    date: post.publishedAt 
+      ? new Date(post.publishedAt).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      : 'Draft', // Show "Draft" for unpublished posts
     readTime: '5 min read', // You can calculate this based on content length if needed
     id: post.slug.current
   }))

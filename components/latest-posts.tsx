@@ -13,6 +13,7 @@ interface BlogPost {
   date: string
   readTime: string
   author: string
+  publishedAt?: string | null
 }
 
 export default async function LatestPosts() {
@@ -61,7 +62,14 @@ export default async function LatestPosts() {
                     {post.title}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">{post.date}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">{post.date}</span>
+                      {post.publishedAt === null && (
+                        <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                          Draft
+                        </span>
+                      )}
+                    </div>
                     <Link
                       href={`/blog/${post.id}`}
                       className="flex items-center gap-1 text-sm font-medium text-black group-hover:text-gray-700 transition-colors"
