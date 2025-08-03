@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function LandingHero() {
   const featuresRef = useRef(null);
@@ -70,13 +71,9 @@ export default function LandingHero() {
               <Button
                 className="bg-white text-black hover:bg-gray-200"
                 size="lg"
-                onClick={() =>
-                  document
-                    .getElementById("features")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
+                asChild
               >
-                Explore Features
+                <Link href="/events">Kohedha Events</Link>
               </Button>
               <Button
                 className="border-white bg-transparent hover:bg-white hover:text-black"
