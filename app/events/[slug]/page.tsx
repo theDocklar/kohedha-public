@@ -5,9 +5,70 @@ import { Button } from "@/components/ui/button"
 import { getEvent } from "@/lib/sanity-events"
 import { PortableText } from "@portabletext/react"
 import { notFound } from "next/navigation"
+import { Metadata } from "next"
+import StructuredData from "@/components/structured-data"
 
 interface EventPageProps {
   params: { slug: string }
+}
+
+// Generate metadata for the event page
+export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
+  const event = await getEvent(params.slug)
+  
+  if (!event) {
+    return {
+      title: 'Event Not Found',
+      description: 'The requested event could not be found.',
+    }
+  }
+
+  return {
+    title: event.title,
+    description: event.description || `Join ${event.title} in Sri Lanka. Discover amazing events and experiences with Kohedha.`,
+    keywords: [
+      event.category,
+      'Sri Lanka',
+      'events',
+      'entertainment',
+      'culture',
+      'activities',
+      'local events',
+      ...(event.location?.name ? [event.location.name] : []),
+    ],
+    authors: [{ name: event.organizer }],
+    openGraph: {
+      title: event.title,
+      description: event.description || `Join ${event.title} in Sri Lanka.`,
+      type: 'website',
+      url: `https://kohedha.lk/events/${event.id}`,
+      images: [
+        {
+          url: event.image,
+          width: 1200,
+          height: 630,
+          alt: event.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: event.title,
+      description: event.description || `Join ${event.title} in Sri Lanka.`,
+      images: [event.image],
+      creator: '@kohedha',
+    },
+    alternates: {
+      canonical: `/events/${event.id}`,
+    },
+    other: {
+      'event:start_time': event.eventDate,
+      'event:end_time': event.eventEndDate,
+      'event:location': event.location?.name || '',
+      'event:organizer': event.organizer,
+      'event:category': event.category,
+    },
+  }
 }
 
 export default async function EventPage({ params }: EventPageProps) {
@@ -21,6 +82,7 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <div className="min-h-screen bg-white text-black">
+      <StructuredData type="event" data={event} />
       {/* Header */}
       <header className="bg-black py-6 text-white">
         <div className="container px-4">

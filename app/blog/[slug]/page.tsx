@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { getPost, getRelatedPosts } from "@/lib/sanity"
 import { PortableText } from "@portabletext/react"
 import { notFound } from "next/navigation"
+import { Metadata } from "next"
+import StructuredData from "@/components/structured-data"
 
 interface BlogPostPageProps {
   params: { slug: string }
@@ -14,6 +16,70 @@ interface RelatedPost {
   id: string
   title: string
   image: string
+}
+
+// Generate metadata for the blog post
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const post = await getPost(params.slug)
+  
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+      description: 'The requested blog post could not be found.',
+    }
+  }
+
+  return {
+    title: post.title,
+    description: post.excerpt || `Read ${post.title} by ${post.author} on Kohedha. Discover the best of Sri Lanka's food and culture.`,
+    keywords: [
+      post.category,
+      'Sri Lanka',
+      'restaurants',
+      'food',
+      'culture',
+      'travel',
+      'blog',
+      ...(post.categories || []),
+    ],
+    authors: [{ name: post.author }],
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || `Read ${post.title} by ${post.author} on Kohedha.`,
+      type: 'article',
+      url: `https://kohedha.lk/blog/${post.id}`,
+      images: [
+        {
+          url: post.image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      authors: [post.author],
+      publishedTime: post.publishedAt,
+      modifiedTime: post.publishedAt,
+      section: post.category,
+      tags: post.categories || [post.category],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt || `Read ${post.title} by ${post.author} on Kohedha.`,
+      images: [post.image],
+      creator: '@kohedha',
+    },
+    alternates: {
+      canonical: `/blog/${post.id}`,
+    },
+    other: {
+      'article:published_time': post.publishedAt,
+      'article:modified_time': post.publishedAt,
+      'article:author': post.author,
+      'article:section': post.category,
+      'article:tag': (post.categories || [post.category]).join(', '),
+    },
+  }
 }
 
 export default async function BlogPost({ params }: BlogPostPageProps) {
@@ -30,6 +96,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen bg-white text-black">
+      <StructuredData type="article" data={post} />
       {/* Header */}
       <header className="bg-black py-6 text-white">
         <div className="container px-4">
