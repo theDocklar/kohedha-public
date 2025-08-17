@@ -76,6 +76,13 @@ export default function LandingHero() {
                 <Link href="/events">Kohedha Events</Link>
               </Button>
               <Button
+                className="bg-white text-black hover:bg-gray-200"
+                size="lg"
+                asChild
+              >
+                <Link href="/deals">Exclusive Deals</Link>
+              </Button>
+              <Button
                 className="border-white bg-transparent hover:bg-white hover:text-black"
                 size="lg"
                 variant="outline"

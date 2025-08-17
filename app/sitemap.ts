@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getPosts } from '@/lib/sanity'
 import { getEvents } from '@/lib/sanity-events'
+import { getDeals } from '@/lib/sanity-deals'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://kohedha.lk'
@@ -21,6 +22,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: event.eventDate ? new Date(event.eventDate) : new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.9,
+  }))
+
+  // Get all deals
+  const deals = await getDeals()
+  const dealUrls = deals.map((deal: any) => ({
+    url: `${baseUrl}/deals/${deal.id}`,
+    lastModified: deal.updatedAt ? new Date(deal.updatedAt) : new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
   }))
 
   // Static pages
@@ -44,6 +54,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/deals`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
@@ -57,5 +73,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...staticPages, ...blogUrls, ...eventUrls]
+  return [...staticPages, ...blogUrls, ...eventUrls, ...dealUrls]
 }

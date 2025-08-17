@@ -29,6 +29,20 @@ export default async function BlogPage() {
             <Link href="/" className="text-2xl font-bold">
               KOHEDHA
             </Link>
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link href="/" className="hover:text-gray-300 transition-colors">
+                Home
+              </Link>
+              <Link href="/blog" className="text-white border-b-2 border-white">
+                Blog
+              </Link>
+              <Link href="/events" className="hover:text-gray-300 transition-colors">
+                Events
+              </Link>
+              <Link href="/deals" className="hover:text-gray-300 transition-colors">
+                Deals
+              </Link>
+            </nav>
             <Button
               variant="outline"
               size="sm"
