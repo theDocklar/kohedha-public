@@ -151,7 +151,7 @@ export default async function DealsPage() {
                   Check back soon for amazing deals and offers on restaurants and food experiences across Sri Lanka.
                 </p>
                 <Button asChild>
-                  <Link href="/blog">Read Our Blog</Link>
+                  <Link href="/blog">Read Our Blogs</Link>
                 </Button>
               </div>
             </div>
