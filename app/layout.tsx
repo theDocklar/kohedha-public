@@ -129,6 +129,7 @@ export default function RootLayout({
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
         <meta name="msapplication-TileColor" content="#000000" />
         <meta name="theme-color" content="#000000" />
+        <meta name="google-site-verification" content="D5VEiVoFUnV5W6-SaXTTlML5zP5R82gg7lAtwnKJdd4" />
         
         {/* Google Analytics */}
         <Script
