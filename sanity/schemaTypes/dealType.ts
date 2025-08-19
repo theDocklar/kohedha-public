@@ -34,6 +34,12 @@ export const dealType = defineType({
       description: 'Detailed description of the deal'
     }),
     defineField({
+      name: 'redirectLink',
+      title: 'Redirect Link',
+      type: 'url',
+      description: 'Link to the actual deal site where users can redeem the offer'
+    }),
+    defineField({
       name: 'rating',
       title: 'Rating',
       type: 'number',

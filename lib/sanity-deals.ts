@@ -9,6 +9,7 @@ export const dealsQuery = groq`
     name,
     slug,
     description,
+    redirectLink,
     rating,
     address,
     "category": category->title,
@@ -43,6 +44,7 @@ export const dealQuery = groq`
     name,
     slug,
     description,
+    redirectLink,
     rating,
     address,
     "category": category->title,
@@ -78,7 +80,7 @@ export const featuredDealsQuery = groq`
     name,
     slug,
     description,
-    rating,
+    redirectLink,
     mainImage {
       asset->,
       alt
@@ -96,7 +98,7 @@ export const dealsByCategoryQuery = groq`
     name,
     slug,
     description,
-    rating,
+    redirectLink,
     mainImage {
       asset->,
       alt

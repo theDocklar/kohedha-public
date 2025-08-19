@@ -5,7 +5,7 @@ import Image from "next/image";
 import { getFeaturedDeals } from "@/lib/sanity-deals";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Tag, ArrowRight } from "lucide-react";
+import { Star, Tag, ArrowRight, ExternalLink } from "lucide-react";
 
 export default async function Home() {
   return (
@@ -214,6 +214,26 @@ async function FeaturedDealsSection() {
                         </span>
                       )}
                     </div>
+                  </div>
+                )}
+
+                {/* Redeem Now Button */}
+                {deal.redirectLink && (
+                  <div className="mb-4">
+                    <Button 
+                      asChild 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+                    >
+                      <a 
+                        href={deal.redirectLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Redeem Now
+                      </a>
+                    </Button>
                   </div>
                 )}
                 

@@ -178,6 +178,30 @@ export default async function DealPage({ params }: DealPageProps) {
                 </Badge>
               </div>
 
+              {/* Redeem Now Button */}
+              {deal.redirectLink && (
+                <div className="mb-8">
+                  <Button 
+                    asChild 
+                    size="lg"
+                    className="bg-green-600 hover:bg-green-700 text-white font-semibold text-lg px-8 py-6"
+                  >
+                    <a 
+                      href={deal.redirectLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-3"
+                    >
+                      <ExternalLink className="w-6 h-6" />
+                      Redeem Now
+                    </a>
+                  </Button>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Click to visit the deal site and redeem your offer
+                  </p>
+                </div>
+              )}
+
               {/* Description */}
               <div className="mb-8">
                 <h2 className="mb-4 text-2xl font-bold">About This Deal</h2>
@@ -239,6 +263,26 @@ export default async function DealPage({ params }: DealPageProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   
+                  {/* Redeem Now Button */}
+                  {deal.redirectLink && (
+                    <div>
+                      <Button 
+                        asChild 
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+                      >
+                        <a 
+                          href={deal.redirectLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Redeem Now
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Address */}
                   {deal.address && (
                     <div>
