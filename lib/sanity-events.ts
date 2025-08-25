@@ -67,6 +67,24 @@ export const featuredEventsQuery = groq`
   }
 `
 
+// GROQ query to get latest events (ordered by creation date)
+export const latestEventsQuery = groq`
+  *[_type == "event" && status != "cancelled"] | order(_createdAt desc)[0...3] {
+    _id,
+    title,
+    slug,
+    description,
+    mainImage,
+    eventDate,
+    location,
+    "category": category->title,
+    "organizer": organizer->name,
+    ticketPrice,
+    isFree,
+    status
+  }
+`
+
 // Function to get all events
 export async function getEvents() {
   const events = await client.fetch(eventsQuery)
@@ -127,6 +145,27 @@ export async function getFeaturedEvents() {
       minute: '2-digit'
     }),
     id: event.slug.current,
+    price: event.isFree ? 'Free' : `LKR ${event.ticketPrice}`
+  }))
+} 
+
+// Function to get latest events
+export async function getLatestEvents() {
+  const events = await client.fetch(latestEventsQuery)
+  return events.map((event: any) => ({
+    ...event,
+    image: event.mainImage ? urlForImage(event.mainImage).url() : '/placeholder.svg?height=400&width=600',
+    date: new Date(event.eventDate).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }),
+    time: new Date(event.eventDate).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    }),
+    id: event.slug.current,
+    slug: event.slug.current,
     price: event.isFree ? 'Free' : `LKR ${event.ticketPrice}`
   }))
 } 

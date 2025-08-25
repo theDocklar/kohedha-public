@@ -151,7 +151,7 @@ export default async function BlogPage() {
                 placeholder="Enter your email"
                 className="flex-1 rounded-md border border-gray-700 bg-gray-900 px-4 py-2 text-white placeholder:text-gray-500 focus:border-white focus:outline-none"
               />
-              <Button className="bg-white text-black hover:bg-gray-200">Subscribe</Button>
+              <Button className="bg-black text-white hover:bg-black/90">Subscribe</Button>
             </div>
           </div>
         </div>

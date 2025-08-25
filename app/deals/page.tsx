@@ -59,34 +59,9 @@ export default async function DealsPage() {
   return (
     <div className="min-h-screen bg-white text-black">
       <StructuredData type="website" data={{}} />
-      
-      {/* Header */}
-      <header className="bg-black py-6 text-white">
-        <div className="container px-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold">
-              KOHEDHA
-            </Link>
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="hover:text-gray-300 transition-colors">
-                Home
-              </Link>
-              <Link href="/blog" className="hover:text-gray-300 transition-colors">
-                Blog
-              </Link>
-              <Link href="/events" className="hover:text-gray-300 transition-colors">
-                Events
-              </Link>
-              <Link href="/deals" className="text-white border-b-2 border-white">
-                Deals
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
 
       {/* Hero Section */}
-      <section className="bg-black text-white py-16">
+      <section className="bg-black text-white py-16 mt-10">
         <div className="container px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">

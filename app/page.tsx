@@ -1,269 +1,709 @@
-import LandingHero from "@/components/landing-hero";
-import LatestPosts from "@/components/latest-posts";
-import Link from "next/link";
-import Image from "next/image";
-import { getFeaturedDeals } from "@/lib/sanity-deals";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Star, Tag, ArrowRight, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Link from "next/link"
+import { Search, MapPin, Star, Clock, Users, Calendar, Filter, Heart, Share2 } from "lucide-react"
+import LatestEvents from "@/components/latest-events"
 
-export default async function Home() {
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
-      {/* Navigation Bar */}
-      <nav className="bg-black border-b border-gray-800 py-4">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-white">
-              KOHEDHA
+    <div className="min-h-screen ">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Desktop%20-%201-kiVoLXXHF4vZGIv8vobc4GWsEeB1bI.png')`,
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50"></div>
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
+          <div className="mb-8">
+            <h1 className="font-bebas text-7xl md:text-9xl lg:text-[12rem] tracking-[0.2em] mb-6 leading-none">
+              ko|HEDHA
+            </h1>
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="text-sm font-poppins opacity-80">theBOAT.group</div>
+              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                <span className="text-xs font-bold text-accent-foreground">pulse</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="font-playfair italic text-2xl md:text-3xl mb-12 opacity-90 max-w-3xl mx-auto leading-relaxed">
+            More than a guide — we're your local vibe compass for Sri Lankan food & culture
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <Button
+              size="lg"
+              className="bg-black hover:bg-black/90 text-white font-poppins font-semibold px-12 py-4 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              
+            >
+              Discover Sri Lanka
+            </Button>
+            <Link href="/events">
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-2 border-white/80 text-white hover:bg-white hover:text-black font-poppins font-semibold px-12 py-4 text-lg bg-white/10 backdrop-blur-sm rounded-full transition-all duration-300"
+            >
+              Explore Events
+            </Button>
             </Link>
-            <div className="flex items-center space-x-8">
-              <Link 
-                href="/blog" 
-                className="text-gray-300 hover:text-white transition-colors font-medium"
+           
+          </div>
+        </div>
+
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 animate-bounce">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-px h-8 bg-white/40"></div>
+            <div className="text-xs font-poppins tracking-wider">SCROLL</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Search & Filters Section */}
+      <section className="py-12 px-4 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                <Input placeholder="Venue or cuisine..." className="pl-10 font-poppins" />
+              </div>
+              <div className="relative">
+                <Select>
+                  <SelectTrigger className="font-poppins">
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="colombo-3">Colombo 3</SelectItem>
+                    <SelectItem value="galle-face">Galle Face</SelectItem>
+                    <SelectItem value="pettah">Pettah</SelectItem>
+                    <SelectItem value="mount-lavinia">Mount Lavinia</SelectItem>
+                    <SelectItem value="kandy">Kandy</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="relative">
+                <Select>
+                  <SelectTrigger className="font-poppins">
+                    <SelectValue placeholder="Vibe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="romantic">Romantic</SelectItem>
+                    <SelectItem value="rooftop">Rooftop</SelectItem>
+                    <SelectItem value="live-music">Live Music</SelectItem>
+                    <SelectItem value="family">Family Friendly</SelectItem>
+                    <SelectItem value="trendy">Trendy</SelectItem>
+                    <SelectItem value="authentic">Authentic</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="relative">
+                <Select>
+                  <SelectTrigger className="font-poppins">
+                    <SelectValue placeholder="When" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="open-now">Open Now</SelectItem>
+                    <SelectItem value="tonight">Tonight Only</SelectItem>
+                    <SelectItem value="weekend">This Weekend</SelectItem>
+                    <SelectItem value="next-week">Next Week</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button className="bg-black hover:bg-black/90 text-white font-poppins font-medium">
+                Search
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground font-poppins"
               >
-                Blog
-              </Link>
-              <Link 
-                href="/events" 
-                className="text-gray-300 hover:text-white transition-colors font-medium"
+                <Filter className="h-3 w-3 mr-1" />
+                Sri Lankan
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground font-poppins"
               >
-                Events
-              </Link>
-              <Link 
-                href="/deals" 
-                className="text-gray-300 hover:text-white transition-colors font-medium"
+                Under LKR 3000
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground font-poppins"
               >
-                Deals
-              </Link>
+                Highly Rated
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground font-poppins"
+              >
+                New Openings
+              </Badge>
             </div>
           </div>
         </div>
-      </nav>
+      </section>
 
-      {/* Hero Section (Client Component) */}
-      <LandingHero />
-
-      {/* Features Section */}
-      <section id="features" className="py-24 bg-white text-black">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Discover What Kohedha Offers</h2>
-            <p className="text-gray-600">
-              Explore the powerful features that make Kohedha the ultimate companion for food and event enthusiasts in Sri Lanka.
+      {/* Enhanced Deals Section */}
+      <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-bebas text-4xl md:text-5xl text-primary mb-4 tracking-wide">TRENDING VENUES</h2>
+            <p className="font-playfair italic text-lg text-muted-foreground">
+              Where Sri Lanka gathers to eat and celebrate
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature cards here, static content as before */}
-            <div className="p-6 border border-gray-100 rounded-lg hover:shadow-md transition-shadow text-center">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Venue Card 1 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="relative h-64 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/elegant-sri-lankan-restaurant-rooftop-dining-with-.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">ROOFTOP SPICE</h3>
+                  <p className="font-poppins text-sm opacity-90">Fine Dining • Rooftop</p>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-accent text-accent-foreground font-poppins">
+                    <Star className="h-3 w-3 mr-1" />
+                    4.8
+                  </Badge>
+                </div>
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">Smart Discovery</h3>
-              <p className="text-gray-600">Find restaurants and events tailored to your preferences.</p>
-            </div>
-            <div className="p-6 border border-gray-100 rounded-lg hover:shadow-md transition-shadow text-center">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Colombo 3 • 2.1 km
+                  </div>
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Open Now
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Romantic
+                  </Badge>
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Live Music
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-black hover:bg-black/90 text-white font-poppins">Book Now</Button>
+                  <Button variant="outline" size="sm" className="px-3 bg-transparent">
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Venue Card 2 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="relative h-64 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/traditional-sri-lankan-street-food-stall-with-colo.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">STREET FLAVORS</h3>
+                  <p className="font-poppins text-sm opacity-90">Street Food • Casual</p>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-accent text-accent-foreground font-poppins">
+                    <Star className="h-3 w-3 mr-1" />
+                    4.6
+                  </Badge>
+                </div>
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">Restaurant Insights</h3>
-              <p className="text-gray-600">Get detailed information about menus, pricing, and ambiance.</p>
-            </div>
-            <div className="p-6 border border-gray-100 rounded-lg hover:shadow-md transition-shadow text-center">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Pettah • 1.5 km
+                  </div>
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Open Now
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Authentic
+                  </Badge>
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Budget
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-black hover:bg-black/90 text-white font-poppins">Join Waitlist</Button>
+                  <Button variant="outline" size="sm" className="px-3 bg-transparent">
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Venue Card 3 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="relative h-64 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/modern-sri-lankan-fusion-restaurant-with-contempor.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">FUSION GARDEN</h3>
+                  <p className="font-poppins text-sm opacity-90">Fusion • Modern</p>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-accent text-accent-foreground font-poppins">
+                    <Star className="h-3 w-3 mr-1" />
+                    4.9
+                  </Badge>
+                </div>
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">Event Calendar</h3>
-              <p className="text-gray-600">Stay updated with the latest cultural and food events.</p>
-            </div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Galle Face • 3.2 km
+                  </div>
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Opens 6 PM
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Trendy
+                  </Badge>
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Instagram
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-black hover:bg-black/90 text-white font-poppins">Book Now</Button>
+                  <Button variant="outline" size="sm" className="px-3 bg-transparent">
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Venue Card 4 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="relative h-64 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/beachside-seafood-restaurant-sri-lanka-sunset.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">OCEAN BREEZE</h3>
+                  <p className="font-poppins text-sm opacity-90">Seafood • Beachside</p>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-accent text-accent-foreground font-poppins">
+                    <Star className="h-3 w-3 mr-1" />
+                    4.7
+                  </Badge>
+                </div>
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Mount Lavinia • 8.5 km
+                  </div>
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Open Now
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Sunset Views
+                  </Badge>
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Fresh Catch
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-black hover:bg-black/90 text-white font-poppins">Book Now</Button>
+                  <Button variant="outline" size="sm" className="px-3 bg-transparent">
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Venue Card 5 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="relative h-64 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/traditional-sri-lankan-tea-house-kandy-hills.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">HILL COUNTRY TEA</h3>
+                  <p className="font-poppins text-sm opacity-90">Tea House • Traditional</p>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-accent text-accent-foreground font-poppins">
+                    <Star className="h-3 w-3 mr-1" />
+                    4.5
+                  </Badge>
+                </div>
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Kandy • 115 km
+                  </div>
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Open Now
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Mountain Views
+                  </Badge>
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Ceylon Tea
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-black hover:bg-black/90 text-white font-poppins">Book Now</Button>
+                  <Button variant="outline" size="sm" className="px-3 bg-transparent">
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Venue Card 6 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="relative h-64 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/modern-sri-lankan-cocktail-bar-nightlife-colombo.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">SPICE LOUNGE</h3>
+                  <p className="font-poppins text-sm opacity-90">Cocktails • Nightlife</p>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-accent text-accent-foreground font-poppins">
+                    <Star className="h-3 w-3 mr-1" />
+                    4.8
+                  </Badge>
+                </div>
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 text-white">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Colombo 2 • 1.8 km
+                  </div>
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Opens 8 PM
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-3">
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    Craft Cocktails
+                  </Badge>
+                  <Badge variant="secondary" className="font-poppins text-xs">
+                    DJ Nights
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 bg-black hover:bg-black/90 text-white font-poppins">Reserve Table</Button>
+                  <Button variant="outline" size="sm" className="px-3 bg-transparent">
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <Button variant="outline" size="lg" className="font-poppins font-medium px-8 bg-transparent">
+              Load More Venues
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* App Preview Section (static) */}
-      <section className="py-24 bg-gray-950">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Experience Sri Lanka Like Never Before</h2>
-              <p className="text-gray-400 mb-8">Whether you're a local or a tourist, Kohedha helps you discover hidden gems and popular hotspots across the island.</p>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3"><span className="mt-1 w-5 h-5 rounded-full bg-white text-black flex items-center justify-center flex-shrink-0">✓</span><span className="text-gray-300">Real-time updates on restaurant availability</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 w-5 h-5 rounded-full bg-white text-black flex items-center justify-center flex-shrink-0">✓</span><span className="text-gray-300">Exclusive deals and discounts</span></li>
-                <li className="flex items-start gap-3"><span className="mt-1 w-5 h-5 rounded-full bg-white text-black flex items-center justify-center flex-shrink-0">✓</span><span className="text-gray-300">Personalized recommendations</span></li>
-              </ul>
-            </div>
-            <div className="flex justify-center">
-              <div className="relative w-64 md:w-72 overflow-hidden rounded-3xl border border-gray-800 bg-black shadow-xl">
-                <Image src="/phonescreen.png?height=800&width=450" alt="Kohedha App Interface" width={450} height={800} className="object-cover" />
+            {/* Enhanced Featured Venues Section */}
+            <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-bebas text-4xl md:text-5xl text-primary mb-4 tracking-wide">TRENDING Events</h2>
+            <p className="font-playfair italic text-lg text-muted-foreground">
+              Where Sri Lanka gathers to eat and celebrate
+            </p>
+          </div>
+
+          <LatestEvents />
+
+          <div className="text-center mt-12">
+            <Link href='/events'>
+            <Button variant="outline" size="lg" className="font-poppins font-medium px-8 bg-transparent">
+              Load More Events
+            </Button>
+            </Link>
+          
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 px-4 bg-muted/10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-bebas text-4xl md:text-5xl text-primary mb-4 tracking-wide">NEARBY RECOMMENDATIONS</h2>
+            <p className="font-playfair italic text-lg text-muted-foreground">Discover hidden gems in your area</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card className="group overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <div className="relative h-40 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/local-sri-lankan-bakery-fresh-bread.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-2 left-2 text-white">
+                  <h4 className="font-bebas text-lg tracking-wide">LOCAL BAKERY</h4>
+                </div>
+                <div className="absolute top-2 right-2">
+                  <Badge className="bg-accent text-accent-foreground font-poppins text-xs">0.3 km</Badge>
+                </div>
               </div>
-            </div>
+            </Card>
+
+            <Card className="group overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <div className="relative h-40 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/sri-lankan-juice-bar-fresh-tropical-fruits.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-2 left-2 text-white">
+                  <h4 className="font-bebas text-lg tracking-wide">JUICE CORNER</h4>
+                </div>
+                <div className="absolute top-2 right-2">
+                  <Badge className="bg-accent text-accent-foreground font-poppins text-xs">0.5 km</Badge>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="group overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <div className="relative h-40 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/traditional-sri-lankan-sweet-shop-colorful-dessert.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-2 left-2 text-white">
+                  <h4 className="font-bebas text-lg tracking-wide">SWEET TREATS</h4>
+                </div>
+                <div className="absolute top-2 right-2">
+                  <Badge className="bg-accent text-accent-foreground font-poppins text-xs">0.7 km</Badge>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="group overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
+              <div className="relative h-40 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/sri-lankan-spice-market-colorful-spices-vendor.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-2 left-2 text-white">
+                  <h4 className="font-bebas text-lg tracking-wide">SPICE MARKET</h4>
+                </div>
+                <div className="absolute top-2 right-2">
+                  <Badge className="bg-accent text-accent-foreground font-poppins text-xs">1.2 km</Badge>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Featured Deals Section */}
-      <FeaturedDealsSection />
+      {/* Events Section */}
+      <section className="py-16 px-4 bg-muted/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-bebas text-4xl md:text-5xl text-primary mb-4 tracking-wide">HAPPENING NOW</h2>
+            <p className="font-playfair italic text-lg text-muted-foreground">
+              Events that define the Sri Lankan experience
+            </p>
+          </div>
 
-      {/* Blog Section (Server Component) */}
-      <LatestPosts />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Event Card 1 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="relative h-48 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/sri-lankan-cultural-festival-with-traditional-danc.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">CULTURAL NIGHT</h3>
+                  <p className="font-poppins text-sm opacity-90">Traditional Music & Dance</p>
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    Tonight, 7:00 PM
+                  </div>
+                  <Badge className="bg-accent text-accent-foreground font-poppins">LKR 2,500</Badge>
+                </div>
+                <Button className="w-full bg-black hover:bg-black/90 text-white font-poppins">RSVP Now</Button>
+              </CardContent>
+            </Card>
 
-      {/* Download Section (static) */}
-      <section id="download" className="py-24 bg-black text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-6">Download Kohedha Today</h2>
-            <p className="text-gray-400 mb-10">Join thousands of users who are already discovering the best of Sri Lanka's food and entertainment scene.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <a href="#" className="transition-transform hover:scale-105">
-                <Image src="/app-store.png" alt="Download on App Store" width={200} height={60} className="h-[60px] w-[200px] object-contain" />
-              </a>
-              <a href="#" className="transition-transform hover:scale-105">
-                <Image src="/play-store2.png" alt="Get it on Google Play" width={200} height={60} className="h-[60px] w-[200px] object-contain" />
-              </a>
-            </div>
+            {/* Event Card 2 */}
+            <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="relative h-48 overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundImage: `url('/sri-lankan-food-festival-with-various-local-dishes.png')`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="font-bebas text-2xl tracking-wide">SPICE FESTIVAL</h3>
+                  <p className="font-poppins text-sm opacity-90">Food Tasting & Cooking</p>
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center text-muted-foreground font-poppins text-sm">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    This Weekend
+                  </div>
+                  <Badge className="bg-accent text-accent-foreground font-poppins">Free Entry</Badge>
+                </div>
+                <Button className="w-full bg-black hover:bg-black/90 text-white font-poppins">Notify Me</Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
-
-      {/* Footer (static) */}
-      <footer className="py-12 border-t border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold">KOHEDHA</h2>
-              <p className="mt-2 text-sm text-gray-400">Discover Sri Lanka's best restaurants and events</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-              <Link href="#" className="hover:text-white transition-colors">About</Link>
-              <Link href="#" className="hover:text-white transition-colors">Features</Link>
-              <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-              <Link href="#" className="hover:text-white transition-colors">Contact</Link>
-            </div>
-          </div>
-          <div className="mt-8 text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} Kohedha. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
-  );
-}
-
-// Featured Deals Section Component
-async function FeaturedDealsSection() {
-  const featuredDeals = await getFeaturedDeals()
-
-  if (featuredDeals.length === 0) {
-    return null // Don't show section if no featured deals
-  }
-
-  return (
-    <section className="py-24 bg-gray-50 text-black">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Exclusive Deals & Offers</h2>
-          <p className="text-gray-600">
-            Save money on your favorite restaurants and experiences with our hand-picked deals and special offers.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredDeals.slice(0, 3).map((deal: any) => (
-            <div
-              key={deal.id}
-              className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg"
-            >
-              <div className="relative h-48 w-full overflow-hidden">
-                <Image
-                  src={deal.image || "/placeholder.svg"}
-                  alt={deal.name}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute left-4 top-4 rounded-full bg-black px-3 py-1 text-xs font-medium text-white">
-                  {deal.category}
-                </div>
-                <div className="absolute right-4 top-4 rounded-full bg-black px-3 py-1 text-xs font-medium text-white flex items-center gap-1">
-                  <Star className="w-3 h-3" />
-                  Featured
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-gray-700 transition-colors">
-                  {deal.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {deal.description}
-                </p>
-                
-                {/* Primary Coupon Preview */}
-                {deal.primaryCoupon && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Tag className="w-4 h-4 text-gray-600" />
-                        <span className="font-semibold text-gray-800 text-sm">
-                          {deal.primaryCoupon.discount}
-                        </span>
-                      </div>
-                      {deal.primaryCoupon.code && (
-                        <span className="text-xs text-gray-600 font-mono">
-                          {deal.primaryCoupon.code}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Redeem Now Button */}
-                {deal.redirectLink && (
-                  <div className="mb-4">
-                    <Button 
-                      asChild 
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
-                    >
-                      <a 
-                        href={deal.redirectLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        Redeem Now
-                      </a>
-                    </Button>
-                  </div>
-                )}
-                
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    {deal.status === 'active' ? 'Active Deal' : deal.status}
-                  </div>
-                  <Link
-                    href={`/deals/${deal.id}`}
-                    className="flex items-center gap-1 text-sm font-medium text-black transition-colors group-hover:text-gray-700"
-                  >
-                    View Deal
-                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <Button
-            className="bg-black text-white hover:bg-gray-800"
-            size="lg"
-            asChild
-          >
-            <Link href="/deals">View All Deals</Link>
-          </Button>
-        </div>
-      </div>
-    </section>
   )
 }

@@ -3,8 +3,9 @@ import type { Metadata, Viewport } from "next"
 import { League_Spartan } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import StructuredData from "@/components/structured-data"
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
@@ -147,9 +148,11 @@ export default function RootLayout({
       </head>
       <body className={`${leagueSpartan.variable} font-sans`}>
         <StructuredData type="organization" data={{}} />
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+
+           <Navigation />
+        {children}
+        <Footer />
+
       </body>
     </html>
   )

@@ -27,43 +27,7 @@ export default async function EventsPage() {
   const events = await getEvents()
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      {/* Header */}
-      <header className="bg-black py-6 text-white">
-        <div className="container px-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold">
-              KOHEDHA
-            </Link>
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="hover:text-gray-300 transition-colors">
-                Home
-              </Link>
-              <Link href="/blog" className="hover:text-gray-300 transition-colors">
-                Blog
-              </Link>
-              <Link href="/events" className="text-white border-b-2 border-white">
-                Events
-              </Link>
-              <Link href="/deals" className="hover:text-gray-300 transition-colors">
-                Deals
-              </Link>
-            </nav>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-white text-white hover:bg-white hover:text-black"
-              asChild
-            >
-              <Link href="/" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Home
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-white text-black mt-10">
       {/* Events Hero */}
       <section className="bg-black py-16 text-white">
         <div className="container px-4 text-center">
@@ -166,7 +130,7 @@ export default async function EventsPage() {
                 placeholder="Enter your email"
                 className="flex-1 rounded-md border border-gray-700 bg-gray-900 px-4 py-2 text-white placeholder:text-gray-500 focus:border-white focus:outline-none"
               />
-              <Button className="bg-white text-black hover:bg-gray-200">Subscribe</Button>
+              <Button className="bg-black text-white hover:bg-black/90">Subscribe</Button>
             </div>
           </div>
         </div>
