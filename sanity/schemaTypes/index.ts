@@ -5,9 +5,11 @@ import {dealType} from './dealType'
 import {dealCategoryType} from './dealCategoryType'
 import {eventType} from './eventType'
 import {eventCategoryType} from './eventCategoryType'
+import {googleMapsLocationType} from './googleMapsLocationType'
+import {locationType} from './locationType'
 import {organizerType} from './organizerType'
 import {postType} from './postType'
 
 export const schema = {
-  types: [postType, authorType, categoryType, dealType, dealCategoryType, eventType, eventCategoryType, organizerType, blockContentType],
+  types: [postType, authorType, categoryType, dealType, dealCategoryType, eventType, eventCategoryType, googleMapsLocationType, locationType, organizerType, blockContentType],
 }

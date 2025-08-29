@@ -40,63 +40,19 @@ export const dealType = defineType({
       description: 'Link to the actual deal site where users can redeem the offer'
     }),
     defineField({
+      name: 'location',
+      title: 'Location',
+      type: 'googleMapsLocation',
+      description: 'Enhanced location information with Google Maps integration for accurate coordinates and address parsing'
+    }),
+    defineField({
       name: 'rating',
       title: 'Rating',
       type: 'number',
       validation: (Rule) => Rule.min(1).max(5),
       description: 'Deal rating from 1-5 stars'
     }),
-    defineField({
-      name: 'address',
-      title: 'Address Information',
-      type: 'object',
-      fields: [
-        defineField({
-          name: 'street',
-          title: 'Street Address',
-          type: 'string',
-        }),
-        defineField({
-          name: 'city',
-          title: 'City',
-          type: 'string',
-          validation: (Rule) => Rule.required(),
-        }),
-        defineField({
-          name: 'district',
-          title: 'District',
-          type: 'string',
-        }),
-        defineField({
-          name: 'postalCode',
-          title: 'Postal Code',
-          type: 'string',
-        }),
-        defineField({
-          name: 'country',
-          title: 'Country',
-          type: 'string',
-          initialValue: 'Sri Lanka',
-        }),
-        defineField({
-          name: 'coordinates',
-          title: 'GPS Coordinates',
-          type: 'object',
-          fields: [
-            defineField({
-              name: 'lat',
-              title: 'Latitude',
-              type: 'number',
-            }),
-            defineField({
-              name: 'lng',
-              title: 'Longitude',
-              type: 'number',
-            }),
-          ],
-        }),
-      ],
-    }),
+
     defineField({
       name: 'category',
       title: 'Deal Category',
@@ -430,13 +386,15 @@ export const dealType = defineType({
       title: 'name',
       category: 'category.title',
       status: 'status',
+      location: 'location.city',
       media: 'mainImage',
     },
     prepare(selection) {
-      const {title, category, status} = selection
+      const {title, category, status, location} = selection
+      const locationText = location ? `in ${location}` : ''
       return {
         ...selection,
-        subtitle: category && status ? `${category} • ${status}` : status || category,
+        subtitle: category && status ? `${category} • ${status}${locationText ? ` • ${locationText}` : ''}` : status || category || locationText,
       }
     },
   },

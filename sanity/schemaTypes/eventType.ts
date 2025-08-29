@@ -50,24 +50,9 @@ export const eventType = defineType({
     }),
     defineField({
       name: 'location',
-      type: 'object',
-      fields: [
-        defineField({
-          name: 'name',
-          type: 'string',
-          title: 'Venue Name',
-        }),
-        defineField({
-          name: 'address',
-          type: 'string',
-          title: 'Address',
-        }),
-        defineField({
-          name: 'city',
-          type: 'string',
-          title: 'City',
-        }),
-      ]
+      title: 'Location',
+      type: 'googleMapsLocation',
+      description: 'Enhanced location information with Google Maps integration for accurate coordinates and address parsing'
     }),
     defineField({
       name: 'category',
@@ -125,13 +110,15 @@ export const eventType = defineType({
       title: 'title',
       eventDate: 'eventDate',
       location: 'location.name',
+      city: 'location.city',
       media: 'mainImage',
     },
     prepare(selection) {
-      const {title, eventDate, location} = selection
+      const {title, eventDate, location, city} = selection
+      const locationText = location && city ? `${location}, ${city}` : location || city || 'Location TBD'
       return {
         ...selection,
-        subtitle: eventDate && location ? `${new Date(eventDate).toLocaleDateString()} at ${location}` : '',
+        subtitle: eventDate ? `${new Date(eventDate).toLocaleDateString()} at ${locationText}` : locationText,
       }
     },
   },
