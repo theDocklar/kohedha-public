@@ -16,7 +16,7 @@ export default function HomePage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Desktop%20-%201-kiVoLXXHF4vZGIv8vobc4GWsEeB1bI.png')`,
+            backgroundImage: `url('/hero.svg')`,
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50"></div>
@@ -24,7 +24,7 @@ export default function HomePage() {
 
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <h1 className="font-bebas text-7xl md:text-9xl lg:text-[12rem] tracking-[0.2em] mb-6 leading-none">
               ko|HEDHA
             </h1>
@@ -34,14 +34,14 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-accent-foreground">pulse</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <p className="font-playfair italic text-2xl md:text-3xl mb-12 opacity-90 max-w-3xl mx-auto leading-relaxed">
+          {/* <p className="font-playfair italic text-2xl md:text-3xl mb-12 opacity-90 max-w-3xl mx-auto leading-relaxed">
             More than a guide — we're your local vibe compass for Sri Lankan food & culture
-          </p>
+          </p> */}
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          {/* <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button
               size="lg"
               className="bg-black hover:bg-black/90 text-white font-poppins font-semibold px-12 py-4 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
@@ -59,15 +59,15 @@ export default function HomePage() {
             </Button>
             </Link>
            
-          </div>
+          </div> */}
         </div>
 
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 animate-bounce">
+        {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 animate-bounce">
           <div className="flex flex-col items-center gap-2">
             <div className="w-px h-8 bg-white/40"></div>
             <div className="text-xs font-poppins tracking-wider">SCROLL</div>
           </div>
-        </div>
+        </div> */}
       </section>
 
       {/* Enhanced Search & Filters Section */}
