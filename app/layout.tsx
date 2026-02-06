@@ -4,8 +4,7 @@ import { League_Spartan } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
 import StructuredData from "@/components/structured-data"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
+import { ConditionalLayout } from "@/components/conditional-layout"
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
@@ -148,11 +147,9 @@ export default function RootLayout({
       </head>
       <body className={`${leagueSpartan.variable} font-sans`}>
         <StructuredData type="organization" data={{}} />
-
-           <Navigation />
-        {children}
-        <Footer />
-
+        <ConditionalLayout>
+          {children}
+        </ConditionalLayout>
       </body>
     </html>
   )

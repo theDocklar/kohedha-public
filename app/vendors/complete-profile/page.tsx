@@ -2,10 +2,21 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useVendorProfile } from "@/hooks/use-vendor-profile";
+import { signOutVendor } from "@/lib/auth";
+import { LogOut } from "lucide-react";
 
 type VendorProfileForm = {
   email: string;
@@ -24,26 +35,34 @@ type VendorProfileForm = {
 };
 
 export default function VendorCompleteProfilePage() {
-  // In a real app you would pre-fill these from your API using the logged-in vendor
-  const [formData, setFormData] = useState<VendorProfileForm>({
-    email: "vendor@example.com",
-    companyName: "",
-    businessRegistrationNo: "",
-    vendorMobile: "",
-    locationBusinessName: "",
-    streetAddress: "",
-    city: "",
-    district: "",
-    postalCode: "",
-    country: "Sri Lanka",
-    businessCategory: "",
-    website: "",
-    description: "",
-  });
+  const router = useRouter();
+  const {
+    profile,
+    formData,
+    isLoading,
+    error,
+    updateProfile,
+    setFormData,
+    clearError,
+    setError,
+  } = useVendorProfile();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const handleSignOut = async () => {
+    try {
+      setIsSigningOut(true);
+      await signOutVendor();
+      router.push("/vendors/login");
+    } catch (error) {
+      console.error("Sign out error:", error);
+      router.push("/vendors/login");
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   const handleChange = (field: keyof VendorProfileForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -51,55 +70,80 @@ export default function VendorCompleteProfilePage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
+    clearError();
     setSuccess(null);
 
-    // Basic validation rules – you can tighten these as needed
-    if (!formData.companyName || !formData.vendorMobile || !formData.city || !formData.businessCategory) {
+    // Basic validation
+    if (
+      !formData.companyName ||
+      !formData.vendorMobile ||
+      !formData.city ||
+      !formData.businessCategory
+    ) {
       setError("Please fill in all required fields marked with *.");
       return;
     }
 
-    try {
-      setIsSubmitting(true);
-      // TODO: Call your API to update the Vendor document using this structure:
-      // {
-      //   email,
-      //   companyName,
-      //   businessRegistrationNo,
-      //   vendorMobile,
-      //   location: {
-      //     businessName: locationBusinessName,
-      //     streetAddress,
-      //     city,
-      //     district,
-      //     postalCode,
-      //     country,
-      //   },
-      //   businessCategory,
-      //   website,
-      //   description,
-      // }
+    setIsSubmitting(true);
 
-      console.log("Submit vendor profile:", formData);
-      setSuccess("Profile details saved successfully. Your profile will appear more prominently to Kohedha users.");
-    } catch (err) {
-      setError("Something went wrong while saving your profile. Please try again.");
+    try {
+      const result = await updateProfile(formData);
+
+      if (result.success) {
+        setSuccess(
+          result.message ||
+            "Profile details saved successfully. Your profile will appear more prominently to Kohedha users.",
+        );
+        // Optionally redirect to dashboard after success
+        setTimeout(() => {
+          window.location.href = "/vendors/dashboard";
+        }, 2000);
+      }
+    } catch (error) {
+      // Error is already handled in the hook
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-muted/10 px-4 py-10 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+          <p className="font-poppins text-sm text-muted-foreground">
+            Loading your profile...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-muted/10 px-4 py-10">
       <div className="max-w-4xl mx-auto">
+        {/* Sign Out Button */}
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+            className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+
         <Card className="border border-border shadow-lg">
           <CardHeader className="space-y-2">
             <CardTitle className="font-bebas text-3xl tracking-wide text-black">
               Complete Your Vendor Profile
             </CardTitle>
             <CardDescription className="font-poppins text-sm">
-              Add your business details so guests can easily discover and trust your venue on Kohedha.
+              Add your business details so guests can easily discover and trust
+              your venue on Kohedha.
             </CardDescription>
           </CardHeader>
 
@@ -143,7 +187,9 @@ export default function VendorCompleteProfilePage() {
                       type="text"
                       placeholder="e.g. Sunset Rooftop Lounge"
                       value={formData.companyName}
-                      onChange={(e) => handleChange("companyName", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("companyName", e.target.value)
+                      }
                       className="font-poppins"
                       required
                     />
@@ -157,7 +203,9 @@ export default function VendorCompleteProfilePage() {
                       type="text"
                       placeholder="e.g. BR-123456"
                       value={formData.businessRegistrationNo}
-                      onChange={(e) => handleChange("businessRegistrationNo", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("businessRegistrationNo", e.target.value)
+                      }
                       className="font-poppins"
                     />
                   </div>
@@ -170,7 +218,9 @@ export default function VendorCompleteProfilePage() {
                       type="tel"
                       placeholder="e.g. +94 77 123 4567"
                       value={formData.vendorMobile}
-                      onChange={(e) => handleChange("vendorMobile", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("vendorMobile", e.target.value)
+                      }
                       className="font-poppins"
                       required
                     />
@@ -184,7 +234,9 @@ export default function VendorCompleteProfilePage() {
                       type="text"
                       placeholder="e.g. Restaurant, Bar, Café, Event Venue"
                       value={formData.businessCategory}
-                      onChange={(e) => handleChange("businessCategory", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("businessCategory", e.target.value)
+                      }
                       className="font-poppins"
                       required
                     />
@@ -219,7 +271,9 @@ export default function VendorCompleteProfilePage() {
                       type="text"
                       placeholder="e.g. Kohedha Rooftop – Galle Face"
                       value={formData.locationBusinessName}
-                      onChange={(e) => handleChange("locationBusinessName", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("locationBusinessName", e.target.value)
+                      }
                       className="font-poppins"
                     />
                   </div>
@@ -232,7 +286,9 @@ export default function VendorCompleteProfilePage() {
                       type="text"
                       placeholder="e.g. 123 Galle Road"
                       value={formData.streetAddress}
-                      onChange={(e) => handleChange("streetAddress", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("streetAddress", e.target.value)
+                      }
                       className="font-poppins"
                     />
                   </div>
@@ -272,7 +328,9 @@ export default function VendorCompleteProfilePage() {
                       type="text"
                       placeholder="e.g. 00300"
                       value={formData.postalCode}
-                      onChange={(e) => handleChange("postalCode", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("postalCode", e.target.value)
+                      }
                       className="font-poppins"
                     />
                   </div>
@@ -303,19 +361,20 @@ export default function VendorCompleteProfilePage() {
                   <Textarea
                     placeholder="Tell guests what makes your venue special – atmosphere, cuisine, signature experiences, and more."
                     value={formData.description}
-                    onChange={(e) => handleChange("description", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description", e.target.value)
+                    }
                     className="font-poppins min-h-[120px]"
                   />
                   <p className="text-xs text-muted-foreground font-poppins">
-                    This description appears on your public profile and helps guests decide to visit.
+                    This description appears on your public profile and helps
+                    guests decide to visit.
                   </p>
                 </div>
               </section>
 
               {error && (
-                <p className="text-sm text-red-600 font-poppins">
-                  {error}
-                </p>
+                <p className="text-sm text-red-600 font-poppins">{error}</p>
               )}
 
               {success && (
@@ -328,12 +387,15 @@ export default function VendorCompleteProfilePage() {
                 <Button
                   type="submit"
                   className="bg-black hover:bg-black/90 text-white font-poppins font-medium"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                 >
                   {isSubmitting ? "Saving..." : "Save Profile"}
                 </Button>
 
-                <Link href="/vendors/dashboard" className="text-sm font-poppins text-muted-foreground hover:text-black">
+                <Link
+                  href="/vendors/dashboard"
+                  className="text-sm font-poppins text-muted-foreground hover:text-black"
+                >
                   Back to Dashboard
                 </Link>
               </div>
@@ -342,8 +404,9 @@ export default function VendorCompleteProfilePage() {
 
           <CardFooter className="px-6 pb-6 pt-0">
             <p className="text-xs text-muted-foreground font-poppins">
-              Once your profile is complete, we&apos;ll highlight your venue more prominently across Kohedha to help you
-              reach the right guests.
+              Once your profile is complete, we&apos;ll highlight your venue
+              more prominently across Kohedha to help you reach the right
+              guests.
             </p>
           </CardFooter>
         </Card>
@@ -351,4 +414,3 @@ export default function VendorCompleteProfilePage() {
     </div>
   );
 }
-
