@@ -65,7 +65,8 @@ export default function VendorRegisterPage() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        router.push("/vendors/complete-profile");
+        // Redirect to step 2 to continue registration
+        router.push("/vendors/register/step-2");
         return;
       }
 

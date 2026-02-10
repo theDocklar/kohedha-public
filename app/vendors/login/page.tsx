@@ -48,7 +48,15 @@ export default function VendorLoginPage() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        router.push("/vendors/dashboard");
+        const registrationStep = data.data?.registrationStep || 3;
+
+        if (registrationStep === 1) {
+          router.push("/vendors/register/step-2");
+        } else if (registrationStep === 2) {
+          router.push("/vendors/register/step-3");
+        } else {
+          router.push("/vendors/dashboard");
+        }
         return;
       }
 

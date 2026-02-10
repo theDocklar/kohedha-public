@@ -37,7 +37,7 @@ const menuItems = [
   {
     title: "Venue Details",
     icon: Building2,
-    href: "/vendors/venue",
+    href: "/vendors/venue-details",
   },
   {
     title: "Menu Details",
