@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { VendorLayout } from "@/components/vendors/vendor-layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MapPin } from "lucide-react";
+import { FormSection } from "@/components/vendors/form-section";
+import { AlertMessage } from "@/components/vendors/alert-message";
+import { VenueFormField } from "@/components/vendors/venue-form-field";
+import { MapPin, Edit2, Save, X } from "lucide-react";
 import { signOutVendor } from "@/lib/auth";
 
 type LocationData = {
@@ -18,9 +20,14 @@ type LocationData = {
   country: string;
 };
 
-type VendorLocationResponse = {
+type VenueDetailsData = {
   companyName: string;
   email: string;
+  businessRegistrationNo: string;
+  vendorMobile: string;
+  businessCategory: string;
+  website: string;
+  description: string;
   location: LocationData;
 };
 
@@ -28,27 +35,34 @@ export default function VenueDetailsPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [vendorData, setVendorData] = useState<VendorLocationResponse | null>(
-    null,
-  );
 
-  const [locationData, setLocationData] = useState<LocationData>({
-    businessName: "",
-    streetAddress: "",
-    city: "",
-    district: "",
-    postalCode: "",
-    country: "Sri Lanka",
+  const [venueData, setVenueData] = useState<VenueDetailsData>({
+    companyName: "",
+    email: "",
+    businessRegistrationNo: "",
+    vendorMobile: "",
+    businessCategory: "",
+    website: "",
+    description: "",
+    location: {
+      businessName: "",
+      streetAddress: "",
+      city: "",
+      district: "",
+      postalCode: "",
+      country: "Sri Lanka",
+    },
   });
 
-  // Load location data on mount
+  // Load venue data on mount
   useEffect(() => {
-    const fetchLocationData = async () => {
+    const fetchVenueDetails = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/vendor/location`,
+          `${process.env.NEXT_PUBLIC_API_URL}/vendor/venue-details`,
           {
             method: "GET",
             credentials: "include",
@@ -66,9 +80,15 @@ export default function VenueDetailsPage() {
         }
 
         if (response.ok && result.success) {
-          setVendorData(result.data);
-          setLocationData(
-            result.data.location || {
+          setVenueData({
+            companyName: result.data.companyName || "",
+            email: result.data.email || "",
+            businessRegistrationNo: result.data.businessRegistrationNo || "",
+            vendorMobile: result.data.vendorMobile || "",
+            businessCategory: result.data.businessCategory || "",
+            website: result.data.website || "",
+            description: result.data.description || "",
+            location: result.data.location || {
               businessName: "",
               streetAddress: "",
               city: "",
@@ -76,7 +96,7 @@ export default function VenueDetailsPage() {
               postalCode: "",
               country: "Sri Lanka",
             },
-          );
+          });
         } else {
           setError(result.message || "Failed to load venue details");
         }
@@ -87,11 +107,25 @@ export default function VenueDetailsPage() {
       }
     };
 
-    fetchLocationData();
+    fetchVenueDetails();
   }, [router]);
 
-  const handleChange = (field: keyof LocationData, value: string) => {
-    setLocationData((prev) => ({ ...prev, [field]: value }));
+  const validateSriLankanMobile = (mobile: string): boolean => {
+    // Sri Lankan mobile format: +94xxxxxxxxx or 0xxxxxxxxx (10 digits after 0)
+    const sriLankanMobileRegex = /^(\+94|0)?[1-9]\d{8}$/;
+    return sriLankanMobileRegex.test(mobile.replace(/\s/g, ""));
+  };
+
+  const handleChange = (field: string, value: string) => {
+    if (field.startsWith("location.")) {
+      const locationField = field.split(".")[1] as keyof LocationData;
+      setVenueData((prev) => ({
+        ...prev,
+        location: { ...prev.location, [locationField]: value },
+      }));
+    } else {
+      setVenueData((prev) => ({ ...prev, [field]: value }));
+    }
     setError(null);
     setSuccess(null);
   };
@@ -102,8 +136,18 @@ export default function VenueDetailsPage() {
     setSuccess(null);
 
     // Validation
-    if (!locationData.streetAddress || !locationData.city) {
+    if (!venueData.location.streetAddress || !venueData.location.city) {
       setError("Street address and city are required fields.");
+      return;
+    }
+
+    if (
+      venueData.vendorMobile &&
+      !validateSriLankanMobile(venueData.vendorMobile)
+    ) {
+      setError(
+        "Please enter a valid Sri Lankan mobile number (e.g., +94712345678 or 0712345678)",
+      );
       return;
     }
 
@@ -111,14 +155,22 @@ export default function VenueDetailsPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/vendor/location-update`,
+        `${process.env.NEXT_PUBLIC_API_URL}/vendor/venue-details`,
         {
           method: "PUT",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ location: locationData }),
+          body: JSON.stringify({
+            companyName: venueData.companyName,
+            businessRegistrationNo: venueData.businessRegistrationNo,
+            vendorMobile: venueData.vendorMobile,
+            businessCategory: venueData.businessCategory,
+            website: venueData.website,
+            description: venueData.description,
+            location: venueData.location,
+          }),
         },
       );
 
@@ -130,11 +182,13 @@ export default function VenueDetailsPage() {
       }
 
       if (response.ok && result.success) {
-        setSuccess("Venue location updated successfully!");
+        setSuccess("Venue details updated successfully!");
+        setIsEditing(false);
         // Update local state
-        setVendorData((prev) => 
-          prev ? { ...prev, location: result.data.location } : null,
-        );
+        setVenueData((prev) => ({
+          ...prev,
+          ...result.data,
+        }));
       } else {
         setError(result.message || "Failed to update venue details");
       }
@@ -167,224 +221,229 @@ export default function VenueDetailsPage() {
 
   return (
     <VendorLayout onSignOut={handleSignOut} pageTitle="Venue Details">
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          {/* Page Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <MapPin className="h-6 w-6 text-blue-600" />
-              </div>
-              <h1 className="font-bebas text-4xl tracking-tight text-gray-900">
-                Venue Location Details
-              </h1>
-            </div>
-            <p className="font-poppins text-sm text-gray-600">
-              Update your business location and venue information to help guests
-              find you on Kohedha.
-            </p>
-          </div>
-
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 flex items-center justify-center px-4 py-10">
+        <div className="max-w-4xl w-full">
           {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Current Venue Info Card */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                  <h2 className="font-bebas text-2xl tracking-tight text-gray-900">
-                    Current Venue
-                  </h2>
-                </div>
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className="font-poppins text-xs font-medium text-gray-500 mb-1">
-                      Company Name
-                    </p>
-                    <p className="font-poppins text-sm text-gray-900 font-medium">
-                      {vendorData?.companyName || "Not set"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-poppins text-xs font-medium text-gray-500 mb-1">
-                      Email
-                    </p>
-                    <p className="font-poppins text-sm text-gray-900">
-                      {vendorData?.email}
-                    </p>
-                  </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <p className="font-poppins text-xs text-gray-500">
-                      Company details are managed from your complete profile
-                      page.
-                    </p>
-                  </div>
-                </div>
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            {/* Header */}
+            <div className="p-8 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h2 className="font-bebas text-3xl tracking-tight text-gray-900 mb-2">
+                  Venue Details
+                </h2>
+                <p className="font-poppins text-sm text-gray-600">
+                  Manage your business and location information
+                </p>
+                <p className="text-xs text-gray-500 font-poppins text-center pt-2">
+                  Accurate details help guests find your venue and improve your
+                  visibility on Kohedha.
+                </p>
               </div>
+              {!isEditing ? (
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  className="h-10 bg-black hover:bg-gray-900 text-white font-poppins font-medium"
+                >
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Edit Details
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setError(null);
+                    setSuccess(null);
+                  }}
+                  variant="outline"
+                  className="h-10 border-gray-200 font-poppins"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
+                </Button>
+              )}
             </div>
 
-            {/* Location Form Card */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="p-8 border-b border-gray-100">
-                  <h2 className="font-bebas text-3xl tracking-tight text-gray-900 mb-2">
-                    Location Information
-                  </h2>
-                  <p className="font-poppins text-sm text-gray-600">
-                    Keep your location accurate and up-to-date
-                  </p>
-                </div>
+            {/* Form */}
+            <div className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Business Information Section */}
+                <FormSection title="Business Information">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <VenueFormField
+                      label="Company Name"
+                      value={venueData.companyName}
+                      onChange={(value) => handleChange("companyName", value)}
+                      disabled={!isEditing}
+                    />
 
-                <div className="p-8">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Business Name */}
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium font-poppins text-gray-900">
-                        Business Name at Location
-                      </label>
-                      <Input
-                        type="text"
-                        placeholder="e.g. The Grand Colombo - Galle Face"
-                        value={locationData.businessName}
-                        onChange={(e) =>
-                          handleChange("businessName", e.target.value)
-                        }
-                        className="font-poppins h-12 border-gray-200 focus:border-gray-900"
-                      />
-                      <p className="text-xs text-gray-500 font-poppins">
-                        Optional: Specific name for this location if different
-                        from company name
-                      </p>
-                    </div>
+                    <VenueFormField
+                      label="Email"
+                      type="email"
+                      value={venueData.email}
+                      disabled={true}
+                      helperText="Email cannot be changed"
+                    />
 
-                    {/* Street Address */}
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium font-poppins text-gray-900">
-                        Street Address <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        type="text"
-                        placeholder="e.g. 123 Galle Road"
-                        value={locationData.streetAddress}
-                        onChange={(e) =>
-                          handleChange("streetAddress", e.target.value)
+                    <VenueFormField
+                      label="Business Registration No"
+                      value={venueData.businessRegistrationNo}
+                      onChange={(value) =>
+                        handleChange("businessRegistrationNo", value)
+                      }
+                      placeholder="e.g. PV12345"
+                      disabled={!isEditing}
+                    />
+
+                    <VenueFormField
+                      label="Contact Mobile"
+                      type="tel"
+                      value={venueData.vendorMobile}
+                      onChange={(value) => handleChange("vendorMobile", value)}
+                      placeholder="e.g. +94 71 234 5678"
+                      disabled={!isEditing}
+                    />
+
+                    <VenueFormField
+                      label="Business Category"
+                      type="select"
+                      value={venueData.businessCategory}
+                      onChange={(value) =>
+                        handleChange("businessCategory", value)
+                      }
+                      placeholder="Select category"
+                      disabled={!isEditing}
+                      selectOptions={[
+                        { value: "cafe", label: "Cafe" },
+                        { value: "restaurant", label: "Restaurant" },
+                        { value: "hotel", label: "Hotel" },
+                        { value: "pub", label: "Pub" },
+                      ]}
+                    />
+
+                    <VenueFormField
+                      label="Website"
+                      type="url"
+                      value={venueData.website}
+                      onChange={(value) => handleChange("website", value)}
+                      placeholder="e.g. https://example.com"
+                      disabled={!isEditing}
+                    />
+                  </div>
+
+                  <div className="mt-6">
+                    <VenueFormField
+                      label="Description"
+                      type="textarea"
+                      value={venueData.description}
+                      onChange={(value) => handleChange("description", value)}
+                      placeholder="Tell us about your business..."
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </FormSection>
+
+                {/* Location Information Section */}
+                <FormSection title="Location Information" icon={MapPin}>
+                  <div className="space-y-6">
+                    <VenueFormField
+                      label="Business Name at Location"
+                      value={venueData.location.businessName}
+                      onChange={(value) =>
+                        handleChange("location.businessName", value)
+                      }
+                      placeholder="e.g. The Grand Colombo - Galle Face"
+                      disabled={!isEditing}
+                      helperText="Optional: Specific name for this location if different from company name"
+                    />
+
+                    <VenueFormField
+                      label="Street Address"
+                      value={venueData.location.streetAddress}
+                      onChange={(value) =>
+                        handleChange("location.streetAddress", value)
+                      }
+                      placeholder="e.g. 123 Galle Road"
+                      disabled={!isEditing}
+                      required
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <VenueFormField
+                        label="City"
+                        value={venueData.location.city}
+                        onChange={(value) =>
+                          handleChange("location.city", value)
                         }
-                        className="font-poppins h-12 border-gray-200 focus:border-gray-900"
+                        placeholder="e.g. Colombo"
+                        disabled={!isEditing}
                         required
                       />
+
+                      <VenueFormField
+                        label="District"
+                        value={venueData.location.district}
+                        onChange={(value) =>
+                          handleChange("location.district", value)
+                        }
+                        placeholder="e.g. Colombo District"
+                        disabled={!isEditing}
+                      />
                     </div>
 
-                    {/* City and District */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium font-poppins text-gray-900">
-                          City <span className="text-red-500">*</span>
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="e.g. Colombo"
-                          value={locationData.city}
-                          onChange={(e) => handleChange("city", e.target.value)}
-                          className="font-poppins h-12 border-gray-200 focus:border-gray-900"
-                          required
-                        />
-                      </div>
+                      <VenueFormField
+                        label="Postal Code"
+                        value={venueData.location.postalCode}
+                        onChange={(value) =>
+                          handleChange("location.postalCode", value)
+                        }
+                        placeholder="e.g. 00300"
+                        disabled={!isEditing}
+                      />
 
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium font-poppins text-gray-900">
-                          District
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="e.g. Colombo District"
-                          value={locationData.district}
-                          onChange={(e) =>
-                            handleChange("district", e.target.value)
-                          }
-                          className="font-poppins h-12 border-gray-200 focus:border-gray-900"
-                        />
-                      </div>
+                      <VenueFormField
+                        label="Country"
+                        value={venueData.location.country}
+                        onChange={(value) =>
+                          handleChange("location.country", value)
+                        }
+                        disabled={!isEditing}
+                      />
                     </div>
+                  </div>
+                </FormSection>
 
-                    {/* Postal Code and Country */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium font-poppins text-gray-900">
-                          Postal Code
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="e.g. 00300"
-                          value={locationData.postalCode}
-                          onChange={(e) =>
-                            handleChange("postalCode", e.target.value)
-                          }
-                          className="font-poppins h-12 border-gray-200 focus:border-gray-900"
-                        />
-                      </div>
+                {/* Error and Success Messages */}
+                {error && <AlertMessage message={error} type="error" />}
+                {success && <AlertMessage message={success} type="success" />}
 
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium font-poppins text-gray-900">
-                          Country
-                        </label>
-                        <Input
-                          type="text"
-                          value={locationData.country}
-                          onChange={(e) =>
-                            handleChange("country", e.target.value)
-                          }
-                          className="font-poppins h-12 border-gray-200 focus:border-gray-900"
-                        />
-                      </div>
-                    </div>
+                {/* Action Buttons */}
+                {isEditing && (
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
+                    <Button
+                      type="submit"
+                      className="w-full sm:w-auto h-12 bg-black hover:bg-gray-900 text-white font-poppins font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                      disabled={isSaving}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {isSaving ? "Saving Changes..." : "Save Changes"}
+                    </Button>
 
-                    {/* Error and Success Messages */}
-                    {error && (
-                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-sm text-red-600 font-poppins">
-                          {error}
-                        </p>
-                      </div>
-                    )}
-
-                    {success && (
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-600 font-poppins">
-                          {success}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
+                    <Link
+                      href="/vendors/dashboard"
+                      className="w-full sm:w-auto"
+                    >
                       <Button
-                        type="submit"
-                        className="w-full sm:w-auto h-12 bg-black hover:bg-gray-900 text-white font-poppins font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                        disabled={isSaving}
+                        type="button"
+                        variant="outline"
+                        className="w-full h-12 font-poppins border-gray-200 hover:bg-gray-50"
                       >
-                        {isSaving ? "Saving Changes..." : "Save Location"}
+                        Back to Dashboard
                       </Button>
-
-                      <Link
-                        href="/vendors/dashboard"
-                        className="w-full sm:w-auto"
-                      >
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full h-12 font-poppins border-gray-200 hover:bg-gray-50"
-                        >
-                          Back to Dashboard
-                        </Button>
-                      </Link>
-                    </div>
-
-                    <p className="text-xs text-gray-500 font-poppins pt-2">
-                      Accurate location details help guests find your venue and
-                      improve your visibility on Kohedha.
-                    </p>
-                  </form>
-                </div>
-              </div>
+                    </Link>
+                  </div>
+                )}
+              </form>
             </div>
           </div>
         </div>

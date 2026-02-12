@@ -50,33 +50,6 @@ export default function VendorDashboardPage() {
     <VendorLayout onSignOut={handleSignOut} pageTitle="Dashboard">
       <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          {/* Profile status banner */}
-          {!mockVendor.isProfileComplete && (
-            <div className="mb-12">
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-400 rounded-lg p-5 shadow-sm">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-poppins text-sm font-semibold text-amber-900 mb-1">
-                        Complete your profile
-                      </p>
-                      <p className="font-poppins text-xs text-amber-700">
-                        Increase visibility and build trust with Kohedha users
-                        by completing your profile.
-                      </p>
-                    </div>
-                  </div>
-                  <Link href="/vendors/complete-profile">
-                    <Button className="bg-black hover:bg-gray-900 text-white font-poppins font-medium px-5 rounded-lg shadow-sm">
-                      Complete Profile
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Stats cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
@@ -223,12 +196,21 @@ export default function VendorDashboardPage() {
                 </p>
               </div>
               <div className="p-6 space-y-3">
-                <Link href="/vendors/complete-profile">
+                <Link href="/vendors/venue-details">
                   <Button
                     variant="outline"
                     className="w-full font-poppins text-sm border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 rounded-lg py-6 justify-between group transition-all duration-200"
                   >
-                    <span>Update Profile</span>
+                    <span>Update Venue Details</span>
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/vendors/reservations">
+                  <Button
+                    variant="outline"
+                    className="w-full font-poppins text-sm border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 rounded-lg py-6 justify-between group transition-all duration-200"
+                  >
+                    <span>Manage Reservations</span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
