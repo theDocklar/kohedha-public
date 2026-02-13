@@ -5,6 +5,7 @@ import Script from "next/script"
 import "./globals.css"
 import StructuredData from "@/components/structured-data"
 import { ConditionalLayout } from "@/components/conditional-layout"
+import { Toaster } from "@/components/ui/toaster"
 
 const leagueSpartan = League_Spartan({
   subsets: ["latin"],
@@ -150,6 +151,7 @@ export default function RootLayout({
         <ConditionalLayout>
           {children}
         </ConditionalLayout>
+        <Toaster />
       </body>
     </html>
   )

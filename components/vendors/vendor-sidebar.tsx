@@ -20,6 +20,7 @@ import {
   CalendarDays,
   Tag,
   LayoutDashboard,
+  Armchair,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,11 @@ const menuItems = [
     title: "Menu Details",
     icon: UtensilsCrossed,
     href: "/vendors/menu",
+  },
+  {
+    title: "Table Management",
+    icon: Armchair,
+    href: "/vendors/tables",
   },
   {
     title: "Reservation Management",
