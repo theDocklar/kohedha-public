@@ -21,6 +21,7 @@ import {
   Tag,
   LayoutDashboard,
   Armchair,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -45,16 +46,7 @@ const menuItems = [
     icon: UtensilsCrossed,
     href: "/vendors/menu",
   },
-  {
-    title: "Table Management",
-    icon: Armchair,
-    href: "/vendors/tables",
-  },
-  {
-    title: "Reservation Management",
-    icon: Calendar,
-    href: "/vendors/reservations",
-  },
+
   {
     title: "Manage Events",
     icon: CalendarDays,

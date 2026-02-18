@@ -1,9 +1,10 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { LogOut, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface VendorHeaderProps {
   pageTitle?: string;
@@ -17,6 +18,7 @@ export function VendorHeader({
   className,
 }: VendorHeaderProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSignOut = async () => {
     if (onSignOut) {
@@ -33,6 +35,10 @@ export function VendorHeader({
     }
   };
 
+  const handleReservationPortal = () => {
+    router.push("/vendors/reservation-portal/reserve");
+  };
+
   return (
     <header
       className={cn(
@@ -46,17 +52,28 @@ export function VendorHeader({
         </h1>
       </div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleSignOut}
-        disabled={isLoading}
-        className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-50"
-        title="Sign Out"
-      >
-        <LogOut className={cn("h-5 w-5", isLoading && "animate-pulse")} />
-        <span className="sr-only">Sign Out</span>
-      </Button>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="default"
+          onClick={handleReservationPortal}
+          className="bg-black hover:bg-gray-900 text-white font-poppins font-medium flex items-center gap-2"
+        >
+          <CalendarClock className="h-4 w-4" />
+          <span className="hidden sm:inline">Reservation Portal</span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSignOut}
+          disabled={isLoading}
+          className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-50"
+          title="Sign Out"
+        >
+          <LogOut className={cn("h-5 w-5", isLoading && "animate-pulse")} />
+          <span className="sr-only">Sign Out</span>
+        </Button>
+      </div>
     </header>
   );
 }

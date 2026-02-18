@@ -1,11 +1,14 @@
-export type TableType = "indoor" | "outdoor" | "standard";
+export type TableShape = "square" | "circle" | "rectangle-h" | "rectangle-v";
 
 export type Table = {
   _id: string;
   vendorId: string;
   tableNumber: string;
   seatingCapacity: number;
-  tableType: TableType;
+  sectionId?: string;
+  shape: TableShape;
+  positionX?: number | null;
+  positionY?: number | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -14,14 +17,16 @@ export type Table = {
 export type CreateTableData = {
   tableNumber: string;
   seatingCapacity: number;
-  tableType: TableType;
+  sectionId?: string;
+  shape?: TableShape;
 };
 
 export type UpdateTableData = {
   tableNumber?: string;
   seatingCapacity?: number;
-  tableType?: TableType;
   isActive?: boolean;
+  sectionId?: string;
+  shape?: TableShape;
 };
 
 export type TablesStats = {
@@ -54,8 +59,10 @@ export type TableActionResponse = {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
 
 // Get all tables for the vendor
-export async function getTables(): Promise<TablesResponse> {
-  const res = await fetch(`${API_URL}/vendor/tables`, {
+export async function getTables(sectionId?: string): Promise<TablesResponse> {
+  const queryParams = sectionId ? `?sectionId=${sectionId}` : "";
+
+  const res = await fetch(`${API_URL}/vendor/tables${queryParams}`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -172,21 +179,24 @@ export async function toggleTableStatus(
   return result;
 }
 
-// Get tables by type
-export async function getTablesByType(
-  type: TableType,
-): Promise<TablesResponse> {
-  const res = await fetch(`${API_URL}/vendor/tables/type/${type}`, {
-    method: "GET",
+// Update table positions in bulk
+export async function updateTablePositions(
+  positions: Array<{ id: string; positionX: number; positionY: number }>,
+): Promise<TableActionResponse> {
+  const res = await fetch(`${API_URL}/vendor/tables/update-positions`, {
+    method: "PUT",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({ positions }),
   });
 
+  const result = await res.json();
+
   if (!res.ok) {
-    throw new Error("Failed to fetch tables by type");
+    throw new Error(result.message || "Failed to update table positions");
   }
 
-  return res.json();
+  return result;
 }
