@@ -74,7 +74,10 @@ export default function SettingsPage() {
     }
   };
 
-  const handleEditSection = async (sectionId: string, sectionData: UpdateSectionData) => {
+  const handleEditSection = async (
+    sectionId: string,
+    sectionData: UpdateSectionData,
+  ) => {
     try {
       setIsSubmitting(true);
       const response = await updateSection(sectionId, sectionData);
