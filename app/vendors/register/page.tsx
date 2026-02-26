@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleSignInButton } from "@/components/vendors/google-signin-button";
+import { registerVendor } from "@/lib/auth";
 import { Store, Mail, Lock, CheckCircle2 } from "lucide-react";
 
 export default function VendorRegisterPage() {
@@ -48,32 +49,19 @@ export default function VendorRegisterPage() {
     try {
       setIsSubmitting(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/vendor/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            email: trimmedEmail,
-            password,
-            confirmPassword,
-          }),
-        },
+      const result = await registerVendor(
+        trimmedEmail,
+        password,
+        confirmPassword,
       );
 
-      const data = await res.json().catch(() => ({}));
-
-      if (res.ok) {
+      if (result.success) {
         // Redirect to step 2 to continue registration
         router.push("/vendors/register/step-2");
         return;
       }
 
-      setError(
-        data.message ||
-          "Registration failed. Please check your details and try again.",
-      );
+      setError(result.error || "Registration failed. Please try again.");
     } catch (err) {
       setError(
         "Unable to reach registration service. Please check your connection and try again.",

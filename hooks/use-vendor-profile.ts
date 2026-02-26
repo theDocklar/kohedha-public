@@ -96,6 +96,9 @@ export const useVendorProfile = (): UseVendorProfileReturn => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
+              ...(localStorage.getItem("auth_token") && {
+                Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+              }),
             },
           },
         );
@@ -176,6 +179,9 @@ export const useVendorProfile = (): UseVendorProfileReturn => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            ...(localStorage.getItem("auth_token") && {
+              Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+            }),
           },
           body: JSON.stringify(requestData),
         },

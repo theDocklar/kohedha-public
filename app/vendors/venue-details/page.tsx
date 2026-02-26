@@ -10,26 +10,12 @@ import { AlertMessage } from "@/components/vendors/alert-message";
 import { VenueFormField } from "@/components/vendors/venue-form-field";
 import { MapPin, Edit2, Save, X } from "lucide-react";
 import { signOutVendor } from "@/lib/auth";
-
-type LocationData = {
-  businessName: string;
-  streetAddress: string;
-  city: string;
-  district: string;
-  postalCode: string;
-  country: string;
-};
-
-type VenueDetailsData = {
-  companyName: string;
-  email: string;
-  businessRegistrationNo: string;
-  vendorMobile: string;
-  businessCategory: string;
-  website: string;
-  description: string;
-  location: LocationData;
-};
+import {
+  getVenueDetails,
+  updateVenueDetails,
+  type LocationData,
+  type VenueDetailsData,
+} from "@/lib/venue";
 
 export default function VenueDetailsPage() {
   const router = useRouter();
@@ -59,27 +45,11 @@ export default function VenueDetailsPage() {
 
   // Load venue data on mount
   useEffect(() => {
-    const fetchVenueDetails = async () => {
+    const fetchVenueData = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/vendor/venue-details`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
+        const result = await getVenueDetails();
 
-        const result = await response.json();
-
-        if (response.status === 401 || response.status === 403) {
-          router.push("/vendors/login");
-          return;
-        }
-
-        if (response.ok && result.success) {
+        if (result.success && result.data) {
           setVenueData({
             companyName: result.data.companyName || "",
             email: result.data.email || "",
@@ -99,6 +69,9 @@ export default function VenueDetailsPage() {
           });
         } else {
           setError(result.message || "Failed to load venue details");
+          if (result.message?.includes("not authorized")) {
+            router.push("/vendors/login");
+          }
         }
       } catch (err) {
         setError("Unable to load venue details. Please check your connection.");
@@ -107,7 +80,7 @@ export default function VenueDetailsPage() {
       }
     };
 
-    fetchVenueDetails();
+    fetchVenueData();
   }, [router]);
 
   const validateSriLankanMobile = (mobile: string): boolean => {
@@ -154,43 +127,31 @@ export default function VenueDetailsPage() {
     setIsSaving(true);
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/vendor/venue-details`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            companyName: venueData.companyName,
-            businessRegistrationNo: venueData.businessRegistrationNo,
-            vendorMobile: venueData.vendorMobile,
-            businessCategory: venueData.businessCategory,
-            website: venueData.website,
-            description: venueData.description,
-            location: venueData.location,
-          }),
-        },
-      );
+      const result = await updateVenueDetails({
+        companyName: venueData.companyName,
+        businessRegistrationNo: venueData.businessRegistrationNo,
+        vendorMobile: venueData.vendorMobile,
+        businessCategory: venueData.businessCategory,
+        website: venueData.website,
+        description: venueData.description,
+        location: venueData.location,
+      });
 
-      const result = await response.json();
-
-      if (response.status === 401 || response.status === 403) {
-        router.push("/vendors/login");
-        return;
-      }
-
-      if (response.ok && result.success) {
-        setSuccess("Venue details updated successfully!");
+      if (result.success) {
+        setSuccess(result.message || "Venue details updated successfully!");
         setIsEditing(false);
         // Update local state
-        setVenueData((prev) => ({
-          ...prev,
-          ...result.data,
-        }));
+        if (result.data) {
+          setVenueData((prev) => ({
+            ...prev,
+            ...result.data,
+          }));
+        }
       } else {
         setError(result.message || "Failed to update venue details");
+        if (result.message?.includes("not authorized")) {
+          router.push("/vendors/login");
+        }
       }
     } catch (err) {
       setError("Unable to update venue details. Please try again.");
