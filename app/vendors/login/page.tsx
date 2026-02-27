@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleSignInButton } from "@/components/vendors/google-signin-button";
+import { loginVendor } from "@/lib/auth";
 import { Mail, Lock, Store } from "lucide-react";
 
 export default function VendorLoginPage() {
@@ -35,20 +36,10 @@ export default function VendorLoginPage() {
     try {
       setIsSubmitting(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/vendor/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ email: trimmedEmail, password }),
-        },
-      );
+      const result = await loginVendor(trimmedEmail, password);
 
-      const data = await res.json().catch(() => ({}));
-
-      if (res.ok) {
-        const registrationStep = data.data?.registrationStep || 3;
+      if (result.success) {
+        const registrationStep = result.data?.registrationStep || 3;
 
         if (registrationStep === 1) {
           router.push("/vendors/register/step-2");
@@ -60,12 +51,7 @@ export default function VendorLoginPage() {
         return;
       }
 
-      if (res.status === 401) {
-        setError(data.message || "Invalid email or password.");
-        return;
-      }
-
-      setError(data.message || "Login failed. Please try again.");
+      setError(result.error || "Login failed. Please try again.");
     } catch (err) {
       setError(
         "Unable to reach login service. Please check your connection and try again.",

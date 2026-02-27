@@ -38,12 +38,18 @@ export async function getMenuItems(
       url += `?${params.toString()}`;
     }
 
+    const token = localStorage.getItem("auth_token");
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const res = await fetch(url, {
       method: "GET",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
 
     if (!res.ok) {
@@ -68,12 +74,21 @@ export async function uploadMenuCSV(
     formData.append("file", file);
 
     const url = `${API_URL}/vendor/menu/upload-csv?preview=${preview}`;
+    const token = localStorage.getItem("auth_token");
 
-    const res = await fetch(url, {
+    const fetchOptions: RequestInit = {
       method: "POST",
       credentials: "include",
       body: formData,
-    });
+    };
+
+    if (token) {
+      fetchOptions.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
+    const res = await fetch(url, fetchOptions);
 
     const data = await res.json();
 
@@ -98,12 +113,21 @@ export async function uploadMenuPDF(
     formData.append("file", file);
 
     const url = `${API_URL}/vendor/menu/upload-pdf?preview=${preview}`;
+    const token = localStorage.getItem("auth_token");
 
-    const res = await fetch(url, {
+    const fetchOptions: RequestInit = {
       method: "POST",
       credentials: "include",
       body: formData,
-    });
+    };
+
+    if (token) {
+      fetchOptions.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
+    const res = await fetch(url, fetchOptions);
 
     const data = await res.json();
 
@@ -124,12 +148,18 @@ export async function updateMenuItem(
   updates: Partial<MenuItem>,
 ): Promise<MenuItem> {
   try {
+    const token = localStorage.getItem("auth_token");
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${API_URL}/vendor/menu/${id}`, {
       method: "PUT",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(updates),
     });
 
@@ -149,12 +179,18 @@ export async function updateMenuItem(
 // Delete menu item
 export async function deleteMenuItem(id: string): Promise<void> {
   try {
+    const token = localStorage.getItem("auth_token");
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${API_URL}/vendor/menu/${id}`, {
       method: "DELETE",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
 
     const data = await res.json();
@@ -173,12 +209,21 @@ export async function analyzeCSV(file: File): Promise<any> {
   try {
     const formData = new FormData();
     formData.append("file", file);
+    const token = localStorage.getItem("auth_token");
 
-    const res = await fetch(`${API_URL}/vendor/menu/analyze-csv`, {
+    const fetchOptions: RequestInit = {
       method: "POST",
       credentials: "include",
       body: formData,
-    });
+    };
+
+    if (token) {
+      fetchOptions.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
+    const res = await fetch(`${API_URL}/vendor/menu/analyze-csv`, fetchOptions);
 
     const data = await res.json();
 

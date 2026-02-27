@@ -44,15 +44,22 @@ export type SectionActionResponse = {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
 
 // Get all sections for the vendor
-export async function getSections(isActive?: boolean): Promise<SectionsResponse> {
+export async function getSections(
+  isActive?: boolean,
+): Promise<SectionsResponse> {
   const queryParams = isActive !== undefined ? `?isActive=${isActive}` : "";
-  
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/sections${queryParams}`, {
     method: "GET",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   if (!res.ok) {
@@ -63,13 +70,21 @@ export async function getSections(isActive?: boolean): Promise<SectionsResponse>
 }
 
 // Get a single section by ID
-export async function getSectionById(id: string): Promise<SingleSectionResponse> {
+export async function getSectionById(
+  id: string,
+): Promise<SingleSectionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/sections/${id}`, {
     method: "GET",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   if (!res.ok) {
@@ -83,12 +98,18 @@ export async function getSectionById(id: string): Promise<SingleSectionResponse>
 export async function createSection(
   data: CreateSectionData,
 ): Promise<SectionActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/sections/new-section`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(data),
   });
 
@@ -106,12 +127,18 @@ export async function updateSection(
   id: string,
   data: UpdateSectionData,
 ): Promise<SectionActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/sections/update-section/${id}`, {
     method: "PUT",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(data),
   });
 
@@ -125,13 +152,21 @@ export async function updateSection(
 }
 
 // Delete a section
-export async function deleteSection(id: string): Promise<SectionActionResponse> {
+export async function deleteSection(
+  id: string,
+): Promise<SectionActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/sections/delete-section/${id}`, {
     method: "DELETE",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   const result = await res.json();

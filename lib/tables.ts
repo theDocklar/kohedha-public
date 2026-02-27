@@ -61,13 +61,18 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api";
 // Get all tables for the vendor
 export async function getTables(sectionId?: string): Promise<TablesResponse> {
   const queryParams = sectionId ? `?sectionId=${sectionId}` : "";
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   const res = await fetch(`${API_URL}/vendor/tables${queryParams}`, {
     method: "GET",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   if (!res.ok) {
@@ -79,12 +84,18 @@ export async function getTables(sectionId?: string): Promise<TablesResponse> {
 
 // Get a single table by ID
 export async function getTableById(id: string): Promise<SingleTableResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/tables/${id}`, {
     method: "GET",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   if (!res.ok) {
@@ -98,12 +109,18 @@ export async function getTableById(id: string): Promise<SingleTableResponse> {
 export async function createTable(
   data: CreateTableData,
 ): Promise<TableActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/tables/new-table`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(data),
   });
 
@@ -121,12 +138,18 @@ export async function updateTable(
   id: string,
   data: UpdateTableData,
 ): Promise<TableActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/tables/update-table/${id}`, {
     method: "PUT",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(data),
   });
 
@@ -141,12 +164,18 @@ export async function updateTable(
 
 // Delete a table
 export async function deleteTable(id: string): Promise<TableActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/tables/delete-table/${id}`, {
     method: "DELETE",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   const result = await res.json();
@@ -162,12 +191,18 @@ export async function deleteTable(id: string): Promise<TableActionResponse> {
 export async function toggleTableStatus(
   id: string,
 ): Promise<TableActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/tables/${id}/toggle`, {
     method: "PATCH",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
 
   const result = await res.json();
@@ -183,12 +218,18 @@ export async function toggleTableStatus(
 export async function updateTablePositions(
   positions: Array<{ id: string; positionX: number; positionY: number }>,
 ): Promise<TableActionResponse> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/vendor/tables/update-positions`, {
     method: "PUT",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({ positions }),
   });
 
